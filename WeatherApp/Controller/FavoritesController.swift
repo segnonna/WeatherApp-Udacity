@@ -62,6 +62,7 @@ class FavoritesController: UIViewController, NSFetchedResultsControllerDelegate,
     
     func autocompleteClicked(_ sender: Any) {
         let autocompleteController = GMSAutocompleteViewController()
+        
         autocompleteController.delegate = self
         autocompleteController.placeFields = []
         
@@ -109,6 +110,7 @@ extension FavoritesController {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
+        setUpViews(!(fetchedResultController?.fetchedObjects?.isEmpty ?? true))
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
@@ -123,6 +125,8 @@ extension FavoritesController {
             break
         }
     }
+    
+
     
     // Handle the user's selection.
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {

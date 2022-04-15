@@ -80,8 +80,6 @@ class FavoriteDetailsController: UIViewController {
             
             self.dailyForecast = responseForecast?.daily?.suffix((responseForecast?.daily?.count ?? 0) - 1)
             self.tableView.backgroundColor = backGroundColor
-            self.tableView.delegate = self
-            self.tableView.dataSource = self
             self.tableView.reloadData()
             self.showForeCastLoaderOrData(false)
         }

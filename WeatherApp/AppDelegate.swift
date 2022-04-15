@@ -12,6 +12,7 @@ import GooglePlaces
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
     let dataController = DataController(modelName: "Weather")
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -42,5 +43,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func saveViewContext() {
         try? dataController.viewContex.save()
     }
-
 }

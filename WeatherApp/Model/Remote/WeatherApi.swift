@@ -9,22 +9,17 @@ import Foundation
 
 class WeatherApi {
     
-    struct Constants {
-        static let OPEN_WEATHER_API = "de101acfae21bbea418e3614631fcbeb"
-    }
     enum Endpoints {
-        
-        static let BASE_URL = "https://api.openweathermap.org/data/2.5/"
-        
+    
     case currentWeather (String, Double, Double)
         
     case forecast (String, Double, Double)
         
         var stringValue: String {
             switch self {
-            case .currentWeather(let appId, let latitude, let longitude): return "\(Endpoints.BASE_URL)weather?appid=\(appId)&lat=\(latitude)&lon=\(longitude)&units=metric"
+            case .currentWeather(let appId, let latitude, let longitude): return "\(WeatherApi.BASE_URL)weather?appid=\(appId)&lat=\(latitude)&lon=\(longitude)&units=metric"
                 
-            case .forecast(let appId, let latitude, let longitude): return "\(Endpoints.BASE_URL)onecall?appid=\(appId)&lat=\(latitude)&lon=\(longitude)&units=metric&cnt=5&excludecurrent,minutely,hourly,alerts,feels_like"
+            case .forecast(let appId, let latitude, let longitude): return "\(WeatherApi.BASE_URL)onecall?appid=\(appId)&lat=\(latitude)&lon=\(longitude)&units=metric&cnt=5&excludecurrent,minutely,hourly,alerts,feels_like"
             
         }
     }
@@ -34,8 +29,8 @@ class WeatherApi {
 }
     
     class func fetchCurrentWeather(latitude: Double, longitude: Double, completion: @escaping (CurrentWeatherResponse?, Error?) -> Void){
-        debugPrint(Endpoints.currentWeather(Constants.OPEN_WEATHER_API,latitude, longitude).stringValue)
-        taskForGETRequest(url: Endpoints.currentWeather(Constants.OPEN_WEATHER_API,latitude, longitude).url, responseType: CurrentWeatherResponse.self) { response, error in
+        debugPrint(Endpoints.currentWeather(WeatherApi.OPEN_WEATHER_API,latitude, longitude).stringValue)
+        taskForGETRequest(url: Endpoints.currentWeather(WeatherApi.OPEN_WEATHER_API,latitude, longitude).url, responseType: CurrentWeatherResponse.self) { response, error in
             if let response = response {
                 completion(response, nil)
             } else {
@@ -45,7 +40,7 @@ class WeatherApi {
     }
     
     class func fetchForecast(_ latitude: Double, _ longitude: Double, completion: @escaping (ForecastResponse?, Error?) -> Void){
-        taskForGETRequest(url: Endpoints.forecast(Constants.OPEN_WEATHER_API,latitude, longitude).url, responseType: ForecastResponse.self) { response, error in
+        taskForGETRequest(url: Endpoints.forecast(WeatherApi.OPEN_WEATHER_API,latitude, longitude).url, responseType: ForecastResponse.self) { response, error in
             if let response = response {
                 completion(response, nil)
             } else {

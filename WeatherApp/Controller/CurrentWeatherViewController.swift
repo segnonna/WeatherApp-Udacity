@@ -57,13 +57,14 @@ class CurrentWeatherViewController: UIViewController, CLLocationManagerDelegate,
         debugPrint("user latitude = \(userLocation.coordinate.latitude)")
         debugPrint("user longitude = \(userLocation.coordinate.longitude)")
         
-        
         WeatherApi.fetchCurrentWeather(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude) { response, error in
             
             self.showCurrentWeatherLoaderOrData(false)
             
             guard error == nil else {
-                self.weatherFailureCase()
+                self.activityIndicatorForecast.isHidden = true
+                self.tableView.isHidden = true
+                self.showAlert()
                 return
             }
             
@@ -74,42 +75,6 @@ class CurrentWeatherViewController: UIViewController, CLLocationManagerDelegate,
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         debugPrint("Error \(error)")
-    }
-    
-    fileprivate func weatherFailureCase() {
-        debugPrint("weatherFailureCase \(String(describing: fetchedCurrentWeatherResultController.fetchedObjects?.count))")
-        activityIndicatorForecast.isHidden = true
-        let currentWeather = fetchedCurrentWeatherResultController.fetchedObjects?.first
-        updateViews(Int(currentWeather?.weatherId ?? 800 ), currentWeather?.min ?? 0, currentWeather?.max ?? 0, currentWeather?.current ?? 0,
-                    self.minimumTemperature,
-                    self.currentTemperature,
-                    self.maximumTemperature,
-                    self.temperatureHeader,
-                    self.imageView,
-                    self.scrollView)
-        
-        debugPrint("forecast \(String(describing: fetchedForecastResultController.fetchedObjects?.count))")
-        
-        dailyForecast = []
-        let size = (fetchedForecastResultController.fetchedObjects?.count ?? 0) - 1
-        if size > 0 {
-            scrollView.isHidden = false
-            fetchedForecastResultController.fetchedObjects?.suffix(size).forEach({ forecast in
-                dailyForecast?.append(
-                    ForecastResponse.Daily(dt: Int(forecast.timestamp),
-                                           temp: ForecastResponse.Temp(min: forecast.max, max: forecast.max),
-                                           weather: [ForecastResponse.Weather(id: Int(forecast.weatherId))])
-                )
-            })
-            tableView.backgroundColor = backgroundColor
-            tableView.delegate = self
-            tableView.dataSource = self
-            self.tableView.reloadData()
-            self.showToast(message: "You are offline. This data may be outdated", font: .systemFont(ofSize: 12.0))
-        } else {
-            scrollView.isHidden = true
-            showAlert()
-        }
     }
     
     fileprivate func weatherSuccessCase(_ response: CurrentWeatherResponse?, _ lat: Double, _ lng:Double) {
@@ -140,8 +105,6 @@ class CurrentWeatherViewController: UIViewController, CLLocationManagerDelegate,
             
             self.dailyForecast = responseForecast?.daily?.suffix((responseForecast?.daily?.count ?? 0) - 1)
             self.tableView.backgroundColor = backGroundColor
-            self.tableView.delegate = self
-            self.tableView.dataSource = self
             self.tableView.reloadData()
             self.showForeCastLoaderOrData(false)
         }
@@ -203,7 +166,6 @@ class CurrentWeatherViewController: UIViewController, CLLocationManagerDelegate,
     
     
     fileprivate func addForecastToLocal(_ weatherID: Int, _ max: Double, _ timestamp: Int) {
-        debugPrint("addForecastToLocal")
         dataController.backgroundContext.perform {
             let forecast = Forecast(context: self.dataController.backgroundContext)
             forecast.weatherId = Int16(weatherID)
@@ -282,13 +244,6 @@ extension CurrentWeatherViewController: UITableViewDelegate, UITableViewDataSour
         cell?.backgroundColor = backgroundColor
         
         return cell ?? UITableViewCell()
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //let detailController = storyboard?.instantiateViewController(withIdentifier: "ForecastTableViewCell") as! ForecastTableViewCell
-        // detailController.memeImage = self.memes[indexPath.row].memedImage
-        // navigationController?.pushViewController(detailController, animated: true)
-    }
-    
+    }    
 }
 
